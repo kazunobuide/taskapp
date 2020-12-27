@@ -33,7 +33,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return taskArray.count//修正した
     }
 
-    // 各セルの内容を返すメソッド
+    // 各セルに内容を返すメソッド
     //tableView(_:cellForRowAtIndexPath:)メソッドは各セルの内容を返すメソッドです。データの配列であるtaskArrayから該当するデータを取り出してセルに設定します。ここで登場するDateFormatterクラスは日付を表すDateクラスを任意の形の文字列に変換する機能を持ちます。
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // 再利用可能な cell を得る
@@ -73,7 +73,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             center.removePendingNotificationRequests(withIdentifiers: [String(task.id)])
             //データベースから削除する
             try! realm.write{
-                self.realm.delete(task)
+                self.realm.delete(self.taskArray[indexPath.row])
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
             
