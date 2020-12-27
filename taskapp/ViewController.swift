@@ -9,9 +9,10 @@ import UIKit
 import RealmSwift //←追加した
 import UserNotifications//追加
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var searchBar: UISearchBar!
     //Realmインスタンスを取得する
     let realm = try! Realm()// ←追加した
     
@@ -19,12 +20,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //日付の近い順でソート：昇順
     //以降内容をアップデートするとリスト内は自動的に更新される
     var taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)//←追加した
-
+    //（課題）
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
+        //（課題）
+        searchBar.delegate = self
+        searchBar.enablesReturnKeyAutomatically = false
     }
 
     // データの数（＝セルの数）を返すメソッド
@@ -41,7 +47,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         //Cellに値を設定する。
         let task = taskArray[indexPath.row]
-        cell.textLabel?.text = task.title
+        //（課題）カテゴリもテキストに追加
+        cell.textLabel?.text = "【"+task.category+"】" + task.title
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
@@ -87,6 +94,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
     }
+    
+    //（課題）テキスト変更時の呼び出しメソッド
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if(searchBar.text == "") {
+            //検索文字列が空の場合はすべてを表示する。
+            taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending:  false)
+        } else {
+            taskArray = try! Realm().objects(Task.self).filter("category CONTAINS '\(searchText)'").sorted(byKeyPath: "date", ascending: false)
+        }
+        //テーブルを再読み込みする。
+        tableView.reloadData()
+    }
     //segueで画面遷移する時に呼ばれる
     override func prepare(for segue: UIStoryboardSegue, sender: Any?){
         let inputViewController:InputViewController = segue.destination as! InputViewController
@@ -109,4 +129,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
+    
 }
+

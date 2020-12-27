@@ -14,7 +14,8 @@ class InputViewController: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentsTextView: UITextView!
     @IBOutlet weak var datePicker: UIDatePicker!
-    
+    //課題で追加。categoryのTextFieldを追加、Outletをつなげる
+    @IBOutlet weak var categoryTextField: UITextField!
     let realm = try! Realm()//追加した
     var task: Task!//←追加した
     
@@ -27,7 +28,11 @@ class InputViewController: UIViewController {
         
         titleTextField.text = task.title
         contentsTextView.text = task.contents
+        //（課題）
+        categoryTextField.text = task.category
         datePicker.date = task.date
+        
+        
     }
     
     override func viewWillDisappear(_ animated: Bool){
@@ -36,6 +41,9 @@ class InputViewController: UIViewController {
             self.task.contents = self.contentsTextView.text
             self.task.date = self.datePicker.date
             self.realm.add(self.task, update: .modified)
+            //（課題）categoryの値を代入
+            self.task.category = self.categoryTextField.text!
+            
         }
         
         setNotification(task: task)//追加
